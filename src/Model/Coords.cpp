@@ -29,3 +29,8 @@ Coords::Coords()
 Coords::~Coords()
 {
 }
+
+ostream &operator<<(ostream &outs, const Coords &c)
+{
+    return outs << "(" << c.latitude << "," << c.longitude << ")";
+}

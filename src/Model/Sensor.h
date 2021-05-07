@@ -20,8 +20,10 @@ private:
     Coords coords;
 
 public:
+    Coords getCoords() { return coords; }
+    bool addMeasure(time_t, Measure);
     map<time_t, Measure> *getMeasure();
-    Sensor(Coords coords);
+    Sensor(Coords coords = Coords());
     ~Sensor();
 };
 

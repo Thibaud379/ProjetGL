@@ -6,10 +6,7 @@ EXE = AirWatcher.exe
 CONTROL = Control.o AirWatcherIO.o
 MODEL =  Sensor.o User.o PrivateUser.o Admin.o Provider.o Cleaner.o Coords.o
 VIEW = 
-CONTROL:= $(CONTROL:%.o=src/Control/%.o)
-MODEL:= $(MODEL:%.o=src/Model/%.o)
-VIEW := $(VUE:%.o=src/Vue/%.o)
-OBJS = $(MODEL) $(CONTROL) $(VIEW)
+OBJS = $(MODEL:%.o=src/Model/%.o) $(CONTROL:%.o=src/Control/%.o) $(VUE:%.o=src/Vue/%.o)
 LIBRAIRIES = -lm
 .PHONY = clean
 

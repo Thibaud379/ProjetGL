@@ -12,10 +12,11 @@ int main(int argc, char **argv)
         {"sensors", "data/sensors.csv"},
         {"users", "data/users.csv"},
         {"usersUntrusted", "datausersUntrusted.csv"}};
+
     Data *d = AirWatcherIO::loadFiles(files);
-    for (auto it : *(d->attributes))
+    for (auto it : *(d->sensors->at("Sensor0").getMeasure()))
     {
-        cout << it.first << ", " << it.second.first << ", " << it.second.second << endl;
+        cout << it.first << ": " << it.second.NO2<<", "<<it.second.O3 << endl;
     }
 
     return 0;

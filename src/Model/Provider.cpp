@@ -1,9 +1,14 @@
 #include "Provider.h"
 
-Provider::Provider(string login) : User(login)
+void Provider::addCleaner(string cleanerId)
 {
+    this->cleaners.push_back(cleanerId);
 }
 
-Provider::~Provider()
+Provider::Provider(vector<string> cleaners,string login) : User(login)
 {
+    this->cleaners = cleaners;
 }
+
+Provider::Provider(string login) : User(login) {}
+Provider::~Provider() {}

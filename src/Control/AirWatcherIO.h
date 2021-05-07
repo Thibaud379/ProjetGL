@@ -30,7 +30,9 @@ public:
 private:
     static void loadAttributes(Data* d, string path);
     static void loadCleaners(Data* d, string path);
-
+    static void loadProviders(Data* d, string path);
+    static void loadSensors(Data* d, string path);
+    static void loadMeasurements(Data* d, string path);
 };
 
 #endif

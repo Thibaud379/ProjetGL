@@ -17,6 +17,7 @@ public:
     void disconnect();
     string getLogin() { return this->login; }
     User(string login);
+    User();
     ~User();
 };
 
