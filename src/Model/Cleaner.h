@@ -12,6 +12,7 @@ private:
     time_t endTime;
 
 public:
+    Cleaner(Coords c, time_t begin, time_t end);
     Cleaner();
     ~Cleaner();
 };

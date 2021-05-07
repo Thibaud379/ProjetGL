@@ -20,6 +20,7 @@ private:
     Coords coords;
 
 public:
+    map<time_t, Measure> *getMeasure();
     Sensor(Coords coords);
     ~Sensor();
 };

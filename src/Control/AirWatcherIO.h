@@ -14,18 +14,23 @@ using namespace std;
 
 typedef struct
 {
-    unordered_map<string, pair<string, string>> attributes;
-    unordered_map<string, Cleaner> cleaners;
-    unordered_map<string, Provider> providers;
-    unordered_map<string, PrivateUser> privateUsers;
-    unordered_map<string, Sensor> sensors;
+    unordered_map<string, pair<string, string>> *attributes;
+    unordered_map<string, Cleaner> *cleaners;
+    unordered_map<string, Provider> *providers;
+    unordered_map<string, PrivateUser> *privateUsers;
+    unordered_map<string, Sensor> *sensors;
 
 } Data;
 
 class AirWatcherIO
 {
 public:
-    Data *loadFiles(unordered_map<string, string> files);
+    static Data *loadFiles(unordered_map<string, string> files);
+
+private:
+    static void loadAttributes(Data* d, string path);
+    static void loadCleaners(Data* d, string path);
+
 };
 
 #endif

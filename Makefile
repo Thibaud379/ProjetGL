@@ -10,7 +10,7 @@ CONTROL:= $(CONTROL:%.o=src/Control/%.o)
 MODEL:= $(MODEL:%.o=src/Model/%.o)
 VIEW := $(VUE:%.o=src/Vue/%.o)
 OBJS = $(MODEL) $(CONTROL) $(VIEW)
-LIBRAIRIES = 
+LIBRAIRIES = -lm
 .PHONY = clean
 
 $(EXE) :  $(OBJS)
