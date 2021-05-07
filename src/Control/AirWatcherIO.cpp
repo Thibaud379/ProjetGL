@@ -50,7 +50,6 @@ void AirWatcherIO::loadCleaners(Data *d, string path)
     string id, lat, lon, start, end;
     Cleaner c;
     tm t1, t2;
-    string format = "%Y-%m-%d %T";
     try
     {
         file.open(path);
@@ -153,7 +152,6 @@ void AirWatcherIO::loadMeasurements(Data *d, string path)
     string date, id, type, value[4];
     Measure m;
     tm t1;
-    string format = "%Y-%m-%d %T";
     try
     {
         file.open(path);

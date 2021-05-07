@@ -11,7 +11,7 @@ int main(int argc, char **argv)
         {"measurements", "data/measurements.csv"},
         {"sensors", "data/sensors.csv"},
         {"users", "data/users.csv"},
-        {"usersUntrusted", "datausersUntrusted.csv"}};
+        {"usersUntrusted", "data/usersUntrusted.csv"}};
 
     Data *d = AirWatcherIO::loadFiles(files);
     for (auto it : *(d->sensors->at("Sensor0").getMeasure()))

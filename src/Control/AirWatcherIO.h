@@ -12,6 +12,7 @@
 
 using namespace std;
 
+const string format = "%Y-%m-%d %T";
 typedef struct
 {
     unordered_map<string, pair<string, string>> *attributes;
