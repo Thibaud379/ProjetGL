@@ -20,6 +20,7 @@ private:
     Coords coords;
 
 public:
+    static int atmosIndex(Measure m);
     Coords getCoords() { return coords; }
     bool addMeasure(time_t, Measure);
     map<time_t, Measure> *getMeasure();
