@@ -21,9 +21,11 @@ private:
 
 public:
     static int atmosIndex(Measure m);
-    Coords getCoords() { return coords; }
     bool addMeasure(time_t, Measure);
+
+    Coords getCoords() { return coords; }
     map<time_t, Measure> *getMeasure();
+    
     Sensor(Coords coords = Coords());
     ~Sensor();
 };

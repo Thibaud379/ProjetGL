@@ -11,9 +11,13 @@ private:
     vector<string> sensors;
 
 public:
+    void addSensor(string sensorId);
+    vector<string> *getSensors() { return &this->sensors; }
+
     void setTrusted(bool trusted) { this->trusted = trusted; }
     bool isTrusted() { return this->trusted; }
-    PrivateUser(string login);
+    
+    PrivateUser(string login = "");
     ~PrivateUser();
 };
 

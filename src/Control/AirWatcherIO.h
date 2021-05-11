@@ -34,6 +34,8 @@ private:
     static void loadProviders(Data* d, string path);
     static void loadSensors(Data* d, string path);
     static void loadMeasurements(Data* d, string path);
+    static void loadUsers(Data*d,string path);
+    static void loadUntrusted(Data*d,string path);
 };
 
 #endif

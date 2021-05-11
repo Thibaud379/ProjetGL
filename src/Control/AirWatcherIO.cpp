@@ -1,7 +1,9 @@
 #include "AirWatcherIO.h"
 #include <iostream>
 #include <fstream>
+
 #define maxS numeric_limits<streamsize>::max()
+
 Data *AirWatcherIO::loadFiles(unordered_map<string, string> files)
 {
     Data *d = new Data();
@@ -11,6 +13,8 @@ Data *AirWatcherIO::loadFiles(unordered_map<string, string> files)
     loadProviders(d, files.at("providers"));
     loadSensors(d, files.at("sensors"));
     loadMeasurements(d, files.at("measurements"));
+    loadUsers(d, files.at("users"));
+    loadUntrusted(d, files.at("usersUntrusted"));
 
     return d;
 }
@@ -101,7 +105,7 @@ void AirWatcherIO::loadProviders(Data *d, string path)
                 auto res = d->providers->emplace(id, p);
                 if (!res.second)
                 {
-                    d->providers->at("id").addCleaner(cleanerId);
+                    d->providers->at(id).addCleaner(cleanerId);
                 }
             }
             file.ignore(maxS, '\n');
@@ -170,6 +174,67 @@ void AirWatcherIO::loadMeasurements(Data *d, string path)
                 strptime(date.c_str(), format.c_str(), &t1);
                 m = {stof(value[0]), stof(value[1]), stof(value[2]), stof(value[3])};
                 d->sensors->at(id).addMeasure(mktime(&t1), m);
+            }
+            file.ignore(maxS, '\n');
+        }
+        file.close();
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+}
+
+void AirWatcherIO::loadUsers(Data *d, string path)
+{
+    ifstream file;
+    d->privateUsers = new unordered_map<string, PrivateUser>();
+    string id, sensorId;
+    PrivateUser p;
+
+    try
+    {
+        file.open(path);
+        while (!file.eof())
+        {
+            getline(file, id, ';');
+            getline(file, sensorId, ';');
+
+            if (!file.eof())
+            {
+                p = PrivateUser(id);
+                p.addSensor(sensorId);
+                auto res = d->privateUsers->emplace(id, p);
+                if (!res.second)
+                {
+                    d->privateUsers->at(id).addSensor(sensorId);
+                }
+            }
+            file.ignore(maxS, '\n');
+        }
+        file.close();
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+}
+
+void AirWatcherIO::loadUntrusted(Data *d, string path)
+{
+    ifstream file;
+    string id;
+
+    try
+    {
+        file.open(path);
+        while (!file.eof())
+        {
+            getline(file, id, ';');
+
+            if (!file.eof())
+            {
+                d->privateUsers->at(id).setTrusted(false);
             }
             file.ignore(maxS, '\n');
         }
