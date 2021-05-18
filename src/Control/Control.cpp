@@ -23,132 +23,101 @@ int main(int argc, char **argv)
     return 0;
 }
 
-list<pair<Sensor, float>> trouverCapteurSimilaire(Sensor mySensor, float ecartMax, unordered_map<string, Sensor> *sensors, time_t date)
+list<pair<float, Sensor>> findSimilarSensor(Sensor target, float deltaMax, unordered_map<string, Sensor> *sensors, time_t date)
 {
     //Liste des capteurs similaires au capteur de référence
-    list<pair<Sensor, float>> result;
+    list<pair<float, Sensor>> result;
 
     //Mesures pour le capteur de référence :
-    Measure ref = mySensor.getMeasure()->find(date)->second;
+    Measure ref = target.getMeasure()->find(date)->second;
 
-    float ecartNO2, ecartSO2, ecartO3, ecartPM10;
-    float ecart;
+    float deltaNO2, deltaSO2, deltaO3, deltaPM10;
+    float delta;
 
     unordered_map<string, Sensor>::iterator it;
     for (auto it : *sensors)
     {
         //Mesures pour le capteur considéré
         //Tester find et at
-        Measure capt = it.second.getMeasure()->at(date);
+        Measure mes = it.second.getMeasure()->find(date)->second;
 
         //calcul de l'écart au capteur de référence
-        ecartNO2 = (ref.NO2 - capt.NO2) / ref.NO2;
-        ecartO3 = (ref.O3 - capt.O3) / ref.O3;
-        ecartPM10 = (ref.PM10 - capt.PM10) / ref.PM10;
-        ecartSO2 = (ref.SO2 - capt.SO2) / ref.SO2;
+        deltaNO2 = (ref.NO2 - mes.NO2) / ref.NO2;
+        deltaO3 = (ref.O3 - mes.O3) / ref.O3;
+        deltaPM10 = (ref.PM10 - mes.PM10) / ref.PM10;
+        deltaSO2 = (ref.SO2 - mes.SO2) / ref.SO2;
 
-        ecart = abs(ecartNO2) + abs(ecartO3) + abs(ecartO3) + abs(ecartPM10);
+        delta = abs(deltaNO2) + abs(deltaO3) + abs(deltaO3) + abs(deltaPM10);
 
-        //Si l'écart est inférieur à ecartMax : on rajoute le capteur et son écart dans la liste
-        if (ecart <= ecartMax)
+        //Si l'écart est inférieur à deltaMax : on rajoute le capteur et son écart dans la liste
+        if (delta <= deltaMax)
         {
-            pair<Sensor, float> coupleCapteurEcart(it.second, ecart);
-            //coupleCapteurEcart.first=it;
-            //coupleCapteurEcart.second=ecart;
-
-            //Placement de la paire au bon endroit dans la liste (liste triée par écart croissant)
-            if (result.empty())
-            {
-                result.push_front(coupleCapteurEcart);
-            }
-            else
-            {
-                auto rank = result.begin();
-                rank++;
-                for (auto iterate : result)
-                {
-                    if (iterate.second > coupleCapteurEcart.second)
-                    {
-                        result.insert(rank, coupleCapteurEcart);
-                        break;
-                    }
-                }
-            }
+            result.push_back(make_pair(delta, it.second));
         }
     }
 
+    result.sort();
     return result;
 }
 
-vector<Sensor> findCloseSensors(Coords coordonnees, int rayon, Data *d)
+vector<Sensor> findCloseSensors(Coords coords, int radius, unordered_map<string, Sensor> *sensors)
 {
-    unordered_map<string, Sensor> *mesSensors = d->sensors;
-    vector<Sensor> capteurDansLaZone;
+    vector<Sensor> closeSensors;
 
-    for (unordered_map<string, Sensor>::iterator it = (*mesSensors).begin(); it != (*mesSensors).end(); it++)
+    for (unordered_map<string, Sensor>::iterator it = sensors->begin(); it != sensors->end(); it++)
     {
-        Sensor tmp = it->second;
-        Coords lesCoords = tmp.getCoords();
-        if (coordonnees.dist(&lesCoords) < rayon)
+        if (coords.dist(&it->second.getCoords()) < radius)
         {
-            capteurDansLaZone.push_back(it->second);
+            closeSensors.push_back(it->second);
         }
     }
-
-    return capteurDansLaZone;
+    return closeSensors;
 }
 
-int calcAirQuality(Coords coordonnees, int rayon, time_t datDebut, time_t datFin, Data *d)
+int getAirQuality(Coords coords, int radius, time_t start, time_t end, unordered_map<string, Sensor> *sensors)
 {
     Measure m = {0, 0, 0, 0};
-    int nbLMesurePriseEnCompte = 0;
-    vector<Sensor> capteursDeLaZone;
-    capteursDeLaZone = findCloseSensors(coordonnees, rayon, d);
+    int nbMeasures = 0;
+    vector<Sensor> closeSensors = findCloseSensors(coords, radius, sensors);
 
-    for (vector<Sensor>::iterator i = capteursDeLaZone.begin(); i != capteursDeLaZone.end(); i++)
+    for (auto i : closeSensors)
     {
 
-        map<time_t, Measure> mesuresCapteur;
-        mesuresCapteur = *(i->getMeasure());
+        map<time_t, Measure> *measures = i.getMeasure();
 
-        for (map<time_t, Measure>::iterator j = mesuresCapteur.begin(); j != mesuresCapteur.end(); j++)
+        for (auto j : *measures)
         {
-            if (difftime(j->first, datDebut) < 0 && difftime(datFin, j->first) > 0)
+            if (difftime(j.first, start) < 0 && difftime(end, j.first) > 0)
             {
-                nbLMesurePriseEnCompte++;
-                m.NO2 += j->second.NO2;
-                m.SO2 += j->second.SO2;
-                m.PM10 += j->second.PM10;
-                m.O3 += j->second.O3;
+                nbMeasures++;
+                m.NO2 += j.second.NO2;
+                m.SO2 += j.second.SO2;
+                m.PM10 += j.second.PM10;
+                m.O3 += j.second.O3;
             }
         }
     }
-    m.NO2 /= nbLMesurePriseEnCompte;
-    m.SO2 /= nbLMesurePriseEnCompte;
-    m.PM10 /= nbLMesurePriseEnCompte;
-    m.O3 /= nbLMesurePriseEnCompte;
+    m.NO2 /= nbMeasures;
+    m.SO2 /= nbMeasures;
+    m.PM10 /= nbMeasures;
+    m.O3 /= nbMeasures;
 
     return Sensor::atmosIndex(m);
 }
 
-vector<int> determinerImpacte(Cleaner monCleaner, int rayon, Data *d)
+vector<int> getImpact(Cleaner target, int radius, unordered_map<string, Sensor> *sensors)
 {
-    time_t debutCleaner = monCleaner.getTime().second;
-    int tabAvant[25];
-    int tabApres[25];
-    vector<int> tabEcart;
-    for (int i = 0; i < 25; i++)
+    time_t debutCleaner = target.getTime().second;
+    int before, after;
+    vector<int> tabdelta;
+    for (int i = 1; i < 25; i++)
     {
-        tabAvant[i] = calcAirQuality(monCleaner.getCoords(), (int)(i * rayon / 25), time(0), debutCleaner, d);
-    }
-    for (int i = 0; i < 25; i++)
-    {
-        tabApres[i] = calcAirQuality(monCleaner.getCoords(), (int)(i * rayon / 25), debutCleaner, time(0), d);
-    }
-    for (int i = 0; i < 25; i++)
-    {
-        tabEcart.push_back(tabAvant[i] - tabApres[i]);
+        before = getAirQuality(target.getCoords(), (int)(i * radius / 25), 0, debutCleaner, sensors);
+
+        after = getAirQuality(target.getCoords(), (int)(i * radius / 25), debutCleaner, numeric_limits<time_t>::max(), sensors);
+
+        tabdelta.push_back(after - before);
     }
 
-    return tabEcart;
+    return tabdelta;
 }
