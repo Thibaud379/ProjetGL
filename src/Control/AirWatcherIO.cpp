@@ -53,7 +53,7 @@ void AirWatcherIO::loadCleaners(Data *d, string path)
     d->cleaners = new unordered_map<string, Cleaner>();
     string id, lat, lon, start, end;
     Cleaner c;
-    tm t1, t2;
+    tm t1 = tm(), t2 = tm();
     try
     {
         file.open(path);
@@ -70,7 +70,7 @@ void AirWatcherIO::loadCleaners(Data *d, string path)
                 strptime(start.c_str(), format.c_str(), &t1);
                 strptime(end.c_str(), format.c_str(), &t2);
 
-                c = Cleaner(Coords(stof(lat), stof(lon)), mktime(&t1), mktime(&t2));
+                c = Cleaner(Coords(stof(lat), stof(lon)), mktime(&t1), mktime(&t2), id);
                 d->cleaners->emplace(id, c);
             }
             file.ignore(maxS, '\n');
@@ -136,7 +136,7 @@ void AirWatcherIO::loadSensors(Data *d, string path)
             if (!file.eof())
             {
 
-                s = Sensor(Coords(stof(lat), stof(lon)));
+                s = Sensor(Coords(stof(lat), stof(lon)), id);
                 d->sensors->emplace(id, s);
             }
             file.ignore(maxS, '\n');
@@ -155,7 +155,7 @@ void AirWatcherIO::loadMeasurements(Data *d, string path)
     ifstream file;
     string date, id, type, value[4];
     Measure m;
-    tm t1;
+    tm t1 = tm();
     try
     {
         file.open(path);

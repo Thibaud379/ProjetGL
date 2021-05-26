@@ -5,8 +5,8 @@ CFLAGS=-I. -std=c++11 -c
 EXE = AirWatcher.exe
 CONTROL = Control.o AirWatcherIO.o
 MODEL =  Sensor.o User.o PrivateUser.o Admin.o Provider.o Cleaner.o Coords.o
-VIEW = 
-OBJS = $(MODEL:%.o=src/Model/%.o) $(CONTROL:%.o=src/Control/%.o) $(VUE:%.o=src/Vue/%.o)
+VIEW = Console.o
+OBJS = $(MODEL:%.o=src/Model/%.o) $(CONTROL:%.o=src/Control/%.o) $(VUE:%.o=src/Vue/%.o) src/AirWatcher.o
 LIBRAIRIES = -lm
 .PHONY = clean
 

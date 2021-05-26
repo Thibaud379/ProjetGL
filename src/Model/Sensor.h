@@ -18,15 +18,17 @@ class Sensor
 private:
     map<time_t, Measure> Measures;
     Coords coords;
+    string id;
 
 public:
     static int atmosIndex(Measure m);
     bool addMeasure(time_t, Measure);
 
-    Coords getCoords() { return coords; }
     map<time_t, Measure> *getMeasure();
-    
-    Sensor(Coords coords = Coords());
+    Coords getCoords() { return coords; }
+    string getId() { return id; }
+
+    Sensor(Coords coords = Coords(), string id = "null");
     ~Sensor();
 };
 

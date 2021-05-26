@@ -1,29 +1,21 @@
 
-#include "AirWatcherIO.h"
-#include <iostream>
-#include <list>
+#include "Control.h"
+#include <algorithm>
 
-int main(int argc, char **argv)
+Control::Control(unordered_map<string, string> files)
 {
-    unordered_map<string, string> files = {
-        {"attributes", "data/attributes.csv"},
-        {"cleaners", "data/cleaners.csv"},
-        {"providers", "data/providers.csv"},
-        {"measurements", "data/measurements.csv"},
-        {"sensors", "data/sensors.csv"},
-        {"users", "data/users.csv"},
-        {"usersUntrusted", "data/usersUntrusted.csv"}};
-
-    Data *d = AirWatcherIO::loadFiles(files);
-    for (auto it : *(d->sensors->at("Sensor0").getMeasure()))
-    {
-        cout << it.first << ": " << it.second.NO2 << ", " << it.second.O3 << endl;
-    }
-
-    return 0;
+    data = AirWatcherIO::loadFiles(files);
 }
 
-list<pair<float, Sensor>> findSimilarSensor(Sensor target, float deltaMax, unordered_map<string, Sensor> *sensors, time_t date)
+Control::~Control()
+{
+    data->free();
+    delete data;
+}
+
+bool cmp(const pair<float, Sensor> &lhs, const pair<float, Sensor> &rhs) { return lhs.first < rhs.first; }
+
+list<pair<float, Sensor>> Control::findSimilarSensor(Sensor target, float deltaMax, time_t date)
 {
     //Liste des capteurs similaires au capteur de référence
     list<pair<float, Sensor>> result;
@@ -35,7 +27,7 @@ list<pair<float, Sensor>> findSimilarSensor(Sensor target, float deltaMax, unord
     float delta;
 
     unordered_map<string, Sensor>::iterator it;
-    for (auto it : *sensors)
+    for (auto it : *data->sensors)
     {
         //Mesures pour le capteur considéré
         //Tester find et at
@@ -47,7 +39,7 @@ list<pair<float, Sensor>> findSimilarSensor(Sensor target, float deltaMax, unord
         deltaPM10 = (ref.PM10 - mes.PM10) / ref.PM10;
         deltaSO2 = (ref.SO2 - mes.SO2) / ref.SO2;
 
-        delta = abs(deltaNO2) + abs(deltaO3) + abs(deltaO3) + abs(deltaPM10);
+        delta = abs(deltaNO2) + abs(deltaO3) + abs(deltaSO2) + abs(deltaPM10);
 
         //Si l'écart est inférieur à deltaMax : on rajoute le capteur et son écart dans la liste
         if (delta <= deltaMax)
@@ -56,17 +48,17 @@ list<pair<float, Sensor>> findSimilarSensor(Sensor target, float deltaMax, unord
         }
     }
 
-    result.sort();
+    result.sort(cmp);
     return result;
 }
 
-vector<Sensor> findCloseSensors(Coords coords, int radius, unordered_map<string, Sensor> *sensors)
+vector<Sensor> Control::findCloseSensors(Coords coords, int radius)
 {
     vector<Sensor> closeSensors;
 
-    for (unordered_map<string, Sensor>::iterator it = sensors->begin(); it != sensors->end(); it++)
+    for (unordered_map<string, Sensor>::iterator it = data->sensors->begin(); it != data->sensors->end(); it++)
     {
-        if (coords.dist(&it->second.getCoords()) < radius)
+        if (coords.dist(it->second.getCoords()) < radius)
         {
             closeSensors.push_back(it->second);
         }
@@ -74,11 +66,11 @@ vector<Sensor> findCloseSensors(Coords coords, int radius, unordered_map<string,
     return closeSensors;
 }
 
-int getAirQuality(Coords coords, int radius, time_t start, time_t end, unordered_map<string, Sensor> *sensors)
+int Control::getAirQuality(Coords coords, int radius, time_t start, time_t end)
 {
     Measure m = {0, 0, 0, 0};
     int nbMeasures = 0;
-    vector<Sensor> closeSensors = findCloseSensors(coords, radius, sensors);
+    vector<Sensor> closeSensors = findCloseSensors(coords, radius);
 
     for (auto i : closeSensors)
     {
@@ -105,16 +97,16 @@ int getAirQuality(Coords coords, int radius, time_t start, time_t end, unordered
     return Sensor::atmosIndex(m);
 }
 
-vector<int> getImpact(Cleaner target, int radius, unordered_map<string, Sensor> *sensors)
+vector<int> Control::getImpact(Cleaner target, int radius)
 {
     time_t debutCleaner = target.getTime().second;
     int before, after;
     vector<int> tabdelta;
     for (int i = 1; i < 25; i++)
     {
-        before = getAirQuality(target.getCoords(), (int)(i * radius / 25), 0, debutCleaner, sensors);
+        before = getAirQuality(target.getCoords(), (int)(i * radius / 25), 0, debutCleaner);
 
-        after = getAirQuality(target.getCoords(), (int)(i * radius / 25), debutCleaner, numeric_limits<time_t>::max(), sensors);
+        after = getAirQuality(target.getCoords(), (int)(i * radius / 25), debutCleaner, numeric_limits<time_t>::max());
 
         tabdelta.push_back(after - before);
     }
