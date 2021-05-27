@@ -293,18 +293,13 @@ int Sensor::atmosIndex(Measure m)
 
 bool Sensor::addMeasure(time_t t, Measure m)
 {
-    return this->Measures.emplace(t, m).second;
-}
-
-map<time_t, Measure> *Sensor::getMeasure()
-{
-    return &Measures;
+    return this->measures.emplace(t, m).second;
 }
 
 Sensor::Sensor(Coords coords, string id)
 {
     this->coords = coords;
-    this->Measures = map<time_t, Measure>();
+    this->measures = map<time_t, Measure>();
     this->id = id;
 }
 

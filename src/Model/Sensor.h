@@ -16,7 +16,7 @@ typedef struct
 class Sensor
 {
 private:
-    map<time_t, Measure> Measures;
+    map<time_t, Measure> *measures;
     Coords coords;
     string id;
 
@@ -24,7 +24,7 @@ public:
     static int atmosIndex(Measure m);
     bool addMeasure(time_t, Measure);
 
-    map<time_t, Measure> *getMeasure();
+    map<time_t, Measure> *getMeasure(){return measures};
     Coords getCoords() { return coords; }
     string getId() { return id; }
 
