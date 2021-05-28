@@ -9,12 +9,11 @@ class Control
 private:
     /* data */
     AirWatcherIO airWatcherIO;
-    Data &data;
     vector<Sensor> findCloseSensors(Coords coords, int radius);
 
 public:
-    Data &getData() { return data; }
-    list<pair<float, Sensor>> findSimilarSensor(Sensor target, float deltaMax, time_t date);
+    Data &data;
+    list<pair<float, Sensor>> *findSimilarSensor(Sensor target, float deltaMax, time_t date);
     int getAirQuality(Coords coords, int radius, time_t start, time_t end);
     vector<int> getImpact(Cleaner target, int radius);
     Control(unordered_map<string, string> files);

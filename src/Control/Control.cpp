@@ -12,14 +12,15 @@ Control::~Control()
 
 bool cmp(const pair<float, Sensor> &lhs, const pair<float, Sensor> &rhs) { return lhs.first < rhs.first; }
 
-list<pair<float, Sensor>> Control::findSimilarSensor(Sensor target, float deltaMax, time_t date)
+list<pair<float, Sensor>> *Control::findSimilarSensor(Sensor target, float deltaMax, time_t date)
 {
     //Liste des capteurs similaires au capteur de référence
-    list<pair<float, Sensor>> result;
+    list<pair<float, Sensor>> *result = new list<pair<float, Sensor>>;
 
     //Mesures pour le capteur de référence :
     Measure ref = target.getMeasure().find(date)->second;
 
+    float delt;
     for (auto it : data.sensors)
     {
         //Mesures pour le capteur considéré
@@ -29,14 +30,14 @@ list<pair<float, Sensor>> Control::findSimilarSensor(Sensor target, float deltaM
         //calcul de l'écart au capteur de référence
 
         //Si l'écart est inférieur à deltaMax : on rajoute le capteur et son écart dans la liste
-        const float delta = Measure::delta(ref, mes);
-        if (delta <= deltaMax)
+        delt = Measure::delta(ref, mes);
+        if (delt <= deltaMax)
         {
-            result.push_back(make_pair(delta, it.second));
+            result->push_back(make_pair(delt, it.second));
         }
     }
 
-    result.sort(cmp);
+    result->sort(cmp);
     return result;
 }
 

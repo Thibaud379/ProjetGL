@@ -11,6 +11,7 @@ using namespace std;
 struct Measure
 {
     float O3, NO2, SO2, PM10;
+
     void add(const Measure &m)
     {
         this->NO2 += m.NO2;
@@ -18,10 +19,12 @@ struct Measure
         this->O3 += m.O3;
         this->PM10 += m.PM10;
     }
-    static float delta(const Measure &m1, const Measure m2)
+
+    static float delta(const Measure m1, const Measure m2)
     {
-        return abs(m1.NO2 - m2.NO2) / m1.NO2 + abs(m1.O3 - m2.O3) / m1.O3 + abs(m1.PM10 - m2.PM10) / m1.PM10 + abs(m1.SO2 - m2.SO2 / m1.SO2);
+        return abs((m1.NO2 - m2.NO2) / m1.NO2) + abs((m1.O3 - m2.O3) / m1.O3) + abs((m1.PM10 - m2.PM10) / m1.PM10) + abs((m1.SO2 - m2.SO2) / m1.SO2);
     }
+
     void div(int n)
     {
         this->NO2 /= n;
