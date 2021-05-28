@@ -12,14 +12,14 @@ LIBRAIRIES = -lm
 
 $(MAIN): echo $(OBJS) $(MAIN:%.exe=src/%.o)
 	@echo "Link edition"
-	$(GCC) -o $(MAIN) $(OBJS) $(MAIN:%.exe=src/%.o) $(LIBRAIRIES)
+	@$(GCC) -o $(MAIN) $(OBJS) $(MAIN:%.exe=src/%.o) $(LIBRAIRIES)
 
 $(TEST): $(OBJS) $(TEST:%.exe=src/%.o)
 	@echo "Link edition"
-	$(GCC) -o $(TEST) $(OBJS) $(TEST:%.exe=src/%.o) $(LIBRAIRIES)
+	@$(GCC) -o $(TEST) $(OBJS) $(TEST:%.exe=src/%.o) $(LIBRAIRIES)
 
 %.o: %.cpp
-	$(GCC) $(CFLAGS) $< -o $@
+	@$(GCC) $(CFLAGS) $< -o $@
 
 debug: CFLAGS += $(DEBUG)
 debug: $(MAIN)
