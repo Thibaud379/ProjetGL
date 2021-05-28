@@ -11,7 +11,7 @@ private:
 
 public:
     void addCleaner(string cleanerId);
-    vector<string> *getCleaners() { return &cleaners; }
+    vector<string> &getCleaners() { return cleaners; }
 
     Provider(string login = "");
     ~Provider();

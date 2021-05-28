@@ -4,25 +4,21 @@
 
 #define maxS numeric_limits<streamsize>::max()
 
-Data *AirWatcherIO::loadFiles(unordered_map<string, string> files)
+Data::Data(unordered_map<string, string> files)
 {
-    Data *d = new Data();
 
-    loadAttributes(d, files.at("attributes"));
-    loadCleaners(d, files.at("cleaners"));
-    loadProviders(d, files.at("providers"));
-    loadSensors(d, files.at("sensors"));
-    loadMeasurements(d, files.at("measurements"));
-    loadUsers(d, files.at("users"));
-    loadUntrusted(d, files.at("usersUntrusted"));
-
-    return d;
+    this->loadAttributes(files.at("attributes"));
+    this->loadCleaners(files.at("cleaners"));
+    this->loadProviders(files.at("providers"));
+    this->loadSensors(files.at("sensors"));
+    this->loadMeasurements(files.at("measurements"));
+    this->loadUsers(files.at("users"));
+    this->loadUntrusted(files.at("usersUntrusted"));
 }
 
-void AirWatcherIO::loadAttributes(Data *d, string path)
+void Data::loadAttributes(string path)
 {
     ifstream file;
-    d->attributes = new unordered_map<string, pair<string, string>>();
     string id, unit, desc;
 
     try
@@ -36,7 +32,7 @@ void AirWatcherIO::loadAttributes(Data *d, string path)
             getline(file, desc, ';');
 
             if (!file.eof())
-                d->attributes->emplace(id, make_pair(unit, desc));
+                this->attributes.emplace(id, make_pair(unit, desc));
             file.ignore(maxS, '\n');
         }
         file.close();
@@ -47,10 +43,9 @@ void AirWatcherIO::loadAttributes(Data *d, string path)
     }
 }
 
-void AirWatcherIO::loadCleaners(Data *d, string path)
+void Data::loadCleaners(string path)
 {
     ifstream file;
-    d->cleaners = new unordered_map<string, Cleaner>();
     string id, lat, lon, start, end;
     Cleaner c;
     tm t1 = tm(), t2 = tm();
@@ -71,7 +66,7 @@ void AirWatcherIO::loadCleaners(Data *d, string path)
                 strptime(end.c_str(), format.c_str(), &t2);
 
                 c = Cleaner(Coords(stof(lat), stof(lon)), mktime(&t1), mktime(&t2), id);
-                d->cleaners->emplace(id, c);
+                this->cleaners.emplace(id, c);
             }
             file.ignore(maxS, '\n');
         }
@@ -83,10 +78,9 @@ void AirWatcherIO::loadCleaners(Data *d, string path)
     }
 }
 
-void AirWatcherIO::loadProviders(Data *d, string path)
+void Data::loadProviders(string path)
 {
     ifstream file;
-    d->providers = new unordered_map<string, Provider>();
     string id, cleanerId;
     Provider p;
 
@@ -102,10 +96,10 @@ void AirWatcherIO::loadProviders(Data *d, string path)
             {
                 p = Provider(id);
                 p.addCleaner(cleanerId);
-                auto res = d->providers->emplace(id, p);
+                auto res = this->providers.emplace(id, p);
                 if (!res.second)
                 {
-                    d->providers->at(id).addCleaner(cleanerId);
+                    this->providers.at(id).addCleaner(cleanerId);
                 }
             }
             file.ignore(maxS, '\n');
@@ -118,10 +112,9 @@ void AirWatcherIO::loadProviders(Data *d, string path)
     }
 }
 
-void AirWatcherIO::loadSensors(Data *d, string path)
+void Data::loadSensors(string path)
 {
     ifstream file;
-    d->sensors = new unordered_map<string, Sensor>();
     string id, lat, lon;
     Sensor s;
     try
@@ -137,7 +130,7 @@ void AirWatcherIO::loadSensors(Data *d, string path)
             {
 
                 s = Sensor(Coords(stof(lat), stof(lon)), id);
-                d->sensors->emplace(id, s);
+                this->sensors.emplace(id, s);
             }
             file.ignore(maxS, '\n');
         }
@@ -149,7 +142,7 @@ void AirWatcherIO::loadSensors(Data *d, string path)
     }
 }
 
-void AirWatcherIO::loadMeasurements(Data *d, string path)
+void Data::loadMeasurements(string path)
 {
 
     ifstream file;
@@ -173,7 +166,7 @@ void AirWatcherIO::loadMeasurements(Data *d, string path)
             {
                 strptime(date.c_str(), format.c_str(), &t1);
                 m = {stof(value[0]), stof(value[1]), stof(value[2]), stof(value[3])};
-                d->sensors->at(id).addMeasure(mktime(&t1), m);
+                this->sensors.at(id).addMeasure(mktime(&t1), m);
             }
             file.ignore(maxS, '\n');
         }
@@ -185,10 +178,9 @@ void AirWatcherIO::loadMeasurements(Data *d, string path)
     }
 }
 
-void AirWatcherIO::loadUsers(Data *d, string path)
+void Data::loadUsers(string path)
 {
     ifstream file;
-    d->privateUsers = new unordered_map<string, PrivateUser>();
     string id, sensorId;
     PrivateUser p;
 
@@ -204,10 +196,10 @@ void AirWatcherIO::loadUsers(Data *d, string path)
             {
                 p = PrivateUser(id);
                 p.addSensor(sensorId);
-                auto res = d->privateUsers->emplace(id, p);
+                auto res = this->privateUsers.emplace(id, p);
                 if (!res.second)
                 {
-                    d->privateUsers->at(id).addSensor(sensorId);
+                    this->privateUsers.at(id).addSensor(sensorId);
                 }
             }
             file.ignore(maxS, '\n');
@@ -220,7 +212,7 @@ void AirWatcherIO::loadUsers(Data *d, string path)
     }
 }
 
-void AirWatcherIO::loadUntrusted(Data *d, string path)
+void Data::loadUntrusted(string path)
 {
     ifstream file;
     string id;
@@ -234,7 +226,7 @@ void AirWatcherIO::loadUntrusted(Data *d, string path)
 
             if (!file.eof())
             {
-                d->privateUsers->at(id).setTrusted(false);
+                this->privateUsers.at(id).setTrusted(false);
             }
             file.ignore(maxS, '\n');
         }

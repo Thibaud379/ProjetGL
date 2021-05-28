@@ -1,6 +1,7 @@
 #include "Control/Control.h"
 #include <unordered_map>
 #include <ctime>
+
 time_t parseTime(string time)
 {
     struct tm t = tm();
@@ -20,7 +21,7 @@ int main(int argc, char **argv)
         {"usersUntrusted", "data/usersUntrusted.csv"}};
 
     Control c(files);
-    auto l = c.findSimilarSensor(c.getData()->sensors->at("Sensor0"), 10, parseTime("2019-01-04 12:00:00"));
+    auto l = c.findSimilarSensor(c.getData().sensors.at("Sensor0"), 10, parseTime("2019-01-04 12:00:00"));
     for (auto e : l)
     {
         cout << e.first << "  -  " << e.second.getId() << endl;

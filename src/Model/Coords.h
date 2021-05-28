@@ -14,7 +14,6 @@ private:
 
 public:
     float dist(const Coords &c);
-    char *to_string();
     Coords(float latitude, float longitude);
     Coords();
     ~Coords();

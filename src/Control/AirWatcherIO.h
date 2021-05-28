@@ -13,37 +13,35 @@
 using namespace std;
 
 const string format = "%Y-%m-%d %T";
-typedef struct
+struct Data
 {
-    unordered_map<string, pair<string, string>> *attributes;
-    unordered_map<string, Cleaner> *cleaners;
-    unordered_map<string, Provider> *providers;
-    unordered_map<string, PrivateUser> *privateUsers;
-    unordered_map<string, Sensor> *sensors;
-    void free()
-    {
-        delete attributes;
-        delete cleaners;
-        delete providers;
-        delete privateUsers;
-        delete sensors;
-    }
+    unordered_map<string, pair<string, string>> attributes;
+    unordered_map<string, Cleaner> cleaners;
+    unordered_map<string, Provider> providers;
+    unordered_map<string, PrivateUser> privateUsers;
+    unordered_map<string, Sensor> sensors;
 
-} Data;
+    Data(unordered_map<string, string> files);
+
+private:
+    void loadAttributes(string path);
+    void loadCleaners(string path);
+    void loadProviders(string path);
+    void loadSensors(string path);
+    void loadMeasurements(string path);
+    void loadUsers(string path);
+    void loadUntrusted(string path);
+};
 
 class AirWatcherIO
 {
-public:
-    static Data *loadFiles(unordered_map<string, string> files);
 
 private:
-    static void loadAttributes(Data *d, string path);
-    static void loadCleaners(Data *d, string path);
-    static void loadProviders(Data *d, string path);
-    static void loadSensors(Data *d, string path);
-    static void loadMeasurements(Data *d, string path);
-    static void loadUsers(Data *d, string path);
-    static void loadUntrusted(Data *d, string path);
+    unordered_map<string, string> files;
+
+public:
+    Data data;
+    AirWatcherIO(unordered_map<string, string> _files) : files(_files), data(_files){};
 };
 
 #endif

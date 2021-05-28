@@ -34,5 +34,6 @@
 #Data
 *.zip
 /tmp
+
 #VSCode settings
 .vscode
