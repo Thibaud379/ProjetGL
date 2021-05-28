@@ -1,1 +1,13 @@
-Test sans paramètres
+Vérifier que le service de détection de capteurs similaires fonctionne correctement (1/1):
+
+Pour un capteur dont on connaît les caractéristiques capteur de référence, ici le capteur 0)
+et un jeu de 3 capteurs dont on connaît également les caractéristiques, lancer la detection :
+->JeuDonnesDetectionSimilaires
+
+->On classe les capteurs similaires au capteur 0 à la date 01/01/2019 parmi les capteurs 
+Sensor2, Sensor3, Sensor4
+
+Résultats ( par ordre de similarité avec le capteur0) :  
+-Sensor2 (score = 0.59), 
+-Sensor4 (score = 0.92), 
+-Sensor3 (score = 1.13).

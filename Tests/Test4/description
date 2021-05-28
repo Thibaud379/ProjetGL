@@ -1,0 +1,8 @@
+Vérifier que le service de calcul de statistiques par période fonctionne correctement (2/3):
+
+On utilise un jeu de données des valeurs de capteur pour une période supérieure à la période recherchée 
+(les données vont du 01/01/2019 au 05/01/2019) 
+On effectue la requête pour le sensor0 pour la période 01/01/2019-03/01/2019
+
+-> JeuDonnesServicePeriodeARestreindre
+Résultat attendu : 7.33

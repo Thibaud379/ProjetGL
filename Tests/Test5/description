@@ -1,0 +1,7 @@
+Vérifier que le service de calcul de statistiques par période fonctionne correctement (3/3):
+
+On modifie significativement une valeur du jeu de données connu 
+(Valeur modifiée : PM10 du 01/01/2019 passée à 25) 
+
+-> JeuDonnesServicePeriodeModif
+Résultat attendu : 6.33

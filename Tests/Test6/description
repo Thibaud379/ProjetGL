@@ -1,0 +1,6 @@
+Vérifier que le service de calcul de statistiques par zone fonctionne correctement (1/2):
+
+On entre un jeu de données pour une zone dont on connaît la qualité de l’air 
+
+-> JeuDonnesServiceZone
+Résultat attendu : 6

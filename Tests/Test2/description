@@ -1,0 +1,15 @@
+Vérifier que le service de mesure de l’impact d’un AirCleanerfonctionne correctement (1/1):
+
+Pour un jeu de données connu à l’avance, on diminue les valeurs de qualité de l’air dans la zone autour 
+d’un AirCleaner(pour simuler l’impact de ce dernier) 
+
+-> Pour le aircleaner cleaner0 , capteurs dont les valeurs ont été modifiées : 
+33,34,43,44 pour la date du 01/03/2019  
+
+->JeuDonnesImpactAircleaner
+Résultats : 
+-rayon ~ 35km, 
+-écart entre qualité avant et après : 
+    -avant : 8.25; 
+    -après : 4.25; 
+    -ECART : 4
