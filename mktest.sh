@@ -1,0 +1,1 @@
+( cd Tests ; mktest.sh )
