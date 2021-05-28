@@ -24,7 +24,7 @@ public:
     static int atmosIndex(Measure m);
     bool addMeasure(time_t, Measure);
 
-    map<time_t, Measure> *getMeasure(){return measures};
+    map<time_t, Measure> *getMeasure(){return measures;};
     Coords getCoords() { return coords; }
     string getId() { return id; }
 
