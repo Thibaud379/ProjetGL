@@ -1,0 +1,7 @@
+Vérifier que le service de calcul de statistiques par zone fonctionne correctement (2/2):
+	
+On modifie significativement une valeurdu jeu de données connu.
+(Valeur modifiée : PM10 de tous les capteurs passés à 30) 
+
+-> JeuDonnesServiceZoneModif
+Résultat attendu : 5
