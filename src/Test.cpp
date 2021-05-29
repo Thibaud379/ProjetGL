@@ -1,6 +1,7 @@
 #include "Control/Control.h"
 #include <unordered_map>
 #include <ctime>
+#include <iomanip>
 time_t parseTime(string time)
 {
     struct tm t = tm();
@@ -30,18 +31,18 @@ int main(int argc, char **argv)
         
             for (auto e : *l)
             {
-                cout << e.first << "  -  " << e.second.getId() << endl;
+                cout << setprecision(4)<<e.first << "  -  " << e.second.getId() << endl;
             }
     }else if (testNumber == 2)
     {
         
         vector<int> v = c.getImpact(c.data.cleaners.at("Cleaner0"), 50);
-            
-        cout << "before : "<< v.at(0) << endl << "after : "<< v.at(1) << endl<< "difference: "<< v.at(2) << endl;
+        //cout<<"size: "<<v.size()<<endl;    
+        cout << "before : "<< v[0] << endl << "after : "<< v[1] << endl<< "difference: "<< v[2] << endl;
 
     }else if (testNumber == 3)
     {
-        int airQuality = c.getAirQuality(c.data.sensors.at("Sensor0").getCoords(), 0, parseTime("2019-01-01 12:00:00"), parseTime("2019-01-03 12:00:00"));
+        int airQuality = c.getAirQuality(c.data.sensors.at("Sensor0").getCoords(), 2, parseTime("2019-01-01 12:00:00"), parseTime("2019-01-03 12:00:00"));
         
         cout << airQuality << endl;
 
