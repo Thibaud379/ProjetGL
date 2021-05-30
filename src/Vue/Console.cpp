@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -6,7 +5,9 @@
 #include <vector>
 #include <stdexcept>
 
+#include <ctime>
 #include "../Control/Control.h"
+#include "../Model/Cleaner.h"
 
 using namespace std;
 
@@ -15,9 +16,10 @@ class Console
 
 private:
     /* data */
-    Control airWatcher;
+    
+    Control airWatch;
 public:
-    Console(Control controle);
+    Console(unordered_map<string, string> files);
     ~Console();
 
     void menuAgency();
@@ -39,20 +41,31 @@ public:
 int main(int argc, char **argv)
 {
     unordered_map<string, string> files = {
-        {"attributes", "data/attributes.csv"},
-        {"cleaners", "data/cleaners.csv"},
-        {"providers", "data/providers.csv"},
-        {"measurements", "data/measurements.csv"},
-        {"sensors", "data/sensors.csv"},
-        {"users", "data/users.csv"},
-        {"usersUntrusted", "data/usersUntrusted.csv"}};
+        {"attributes", "../../data/attributes.csv"},
+        {"cleaners", "../../data/cleaners.csv"},
+        {"providers", "../../data/providers.csv"},
+        {"measurements", "../../data/measurements.csv"},
+        {"sensors", "../../data/sensors.csv"},
+        {"users", "../../data/users.csv"},
+        {"usersUntrusted", "../../data/usersUntrusted.csv"}};
 
-    Control c(files);
-    Console airWatcher(c);
+    Console airWatch(files);
 
-    cout<<airWatcher.formatIR("192;128")<<endl;
-    cout<<airWatcher.formatLLR("192.5{128")<<endl;
-    cout<<airWatcher.formatLLR("ici;128");
+    time_t timer;
+    struct tm y2k = {0};
+    double seconds;
+
+    y2k.tm_hour = 0;   y2k.tm_min = 0; y2k.tm_sec = 0;
+    y2k.tm_year = 119; y2k.tm_mon = 11; y2k.tm_mday = 1;
+
+    timer=mktime(&y2k);
+    cout<<asctime(localtime(&timer))<<endl;
+
+
+
+    // cout<<airWatch.formatIR("192;128")<<endl;
+    // cout<<airWatch.formatLLR("192.5{128")<<endl;
+    // cout<<airWatch.formatLLR("ici;128");
     return 0;
 }
 
@@ -118,21 +131,8 @@ void Console::split(const string &chaine, char delimiteur, vector<string> &eleme
 }
 
 
-
-
-Console::Console(Control controle)
+Console::Console(unordered_map<string,string> files):airWatch(files)
 {
-    unordered_map<string, string> files = {
-        {"attributes", "data/attributes.csv"},
-        {"cleaners", "data/cleaners.csv"},
-        {"providers", "data/providers.csv"},
-        {"measurements", "data/measurements.csv"},
-        {"sensors", "data/sensors.csv"},
-        {"users", "data/users.csv"},
-        {"usersUntrusted", "data/usersUntrusted.csv"}};
-
-    airWatcher=Control::Control(files);
-
     cout<<"+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+"<<endl;
     cout<<"+                              Bienvenue sur AirWatcher                           +"<<endl;
     cout<<"+                                                                                 +"<<endl;
@@ -239,12 +239,17 @@ void Console::impactAirCleaner(){
         char delimiteur = ';';
         split(choice, delimiteur , elementDuChoice);
         vector<string>::iterator it=elementDuChoice.begin();
-        string id=*it;
+        string id="Cleaner"+*it;
         it++;
         string rayon=*it;
-
-        Cleaner monCleaner=airWatcher.getData()->cleaners->at(id);
-        vector<int> impactAirCleaner=airWatcher.getImpact(monCleaner, stoi(rayon));
+        
+        
+        Cleaner monCleaner=airWatch.data.cleaners.at(id);
+        vector<int> impactAirCleaner=airWatch.getImpact(monCleaner, stoi(rayon));
+        for(vector<int>::iterator it = impactAirCleaner.begin();it!=impactAirCleaner.end();it++){
+            int test=(*it);
+            cout<<test<<endl;
+        }
 
         cout<<"+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+"<<endl;
         cout<<"+                                     AirWatcher                                  +"<<endl;
@@ -313,6 +318,7 @@ void Console::selectZone(){
     char choice[100];
     fscanf(stdin,"%99s",choice);
     if(formatLLR(choice)){ 
+        
         //Pour une commande au bon format
         cout<<"+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+"<<endl;
         cout<<"+                                     AirWatcher                                  +"<<endl;
@@ -374,6 +380,40 @@ void Console::selectZoneAndTime(){
     char choice[100];
     fscanf(stdin,"%99s",choice);
     if(true){                               //if(format(choice))
+        vector<string> elementDuChoice ;
+        char delimiteur = ';';
+        split(choice, delimiteur , elementDuChoice);
+        vector<string>::iterator it=elementDuChoice.begin();
+        float latitude=stof(*it);
+        it++;
+        float longitude=stof(*it);
+        it++;
+        int rayon=stoi(*it);
+        it++;
+        time_t start;
+        it++;
+        time_t end;
+
+        struct tm y2k = {0};
+        
+        y2k.tm_hour = 0;   y2k.tm_min = 0; y2k.tm_sec = 0;
+        y2k.tm_year = 119; y2k.tm_mon = 0; y2k.tm_mday = 1;
+
+        start=mktime(&y2k);
+        cout<<"start :"<<asctime(localtime(&start))<<endl;
+        y2k.tm_mon=1;
+        end=mktime(&y2k);
+        cout<<"end :"<<asctime(localtime(&end))<<endl;
+        
+
+        Measure airQuality=airWatch.getAirQuality(Coords(latitude, longitude),rayon,start, end);
+        int indice=airQuality.atmosIndex();
+        cout<<"qualité de l'air :"<<indice<<endl;
+        cout<<"O3 :"<<airQuality.O3<<endl;
+        cout<<"SO2 :"<<airQuality.SO2<<endl;
+        cout<<"NO2 :"<<airQuality.NO2<<endl;
+        cout<<"PM10 :"<<airQuality.PM10<<endl;
+
         //Pour une commande au bon format
         cout<<"+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+"<<endl;
         cout<<"+                                     AirWatcher                                  +"<<endl;
@@ -411,6 +451,5 @@ void Console::badFormat(string menu){
 Console::~Console()
 {
 }
-
 
 
