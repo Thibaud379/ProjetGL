@@ -4,6 +4,8 @@
 #include <cstring>
 #include <vector>
 #include <stdexcept>
+#include <time.h>
+#include <locale.h>
 
 #include <ctime>
 #include "../Control/Control.h"
@@ -36,36 +38,24 @@ public:
     void split(const string &chaine, char delimiteur, vector<string> &elements);
     bool formatLLR(string choice);
     bool formatIR(string choice);
+    bool formatDD(string choice);
+    bool formatD(string choice);
+    bool formatLLRDD(string choice);
 };
 
 int main(int argc, char **argv)
 {
     unordered_map<string, string> files = {
-        {"attributes", "../../data/attributes.csv"},
-        {"cleaners", "../../data/cleaners.csv"},
-        {"providers", "../../data/providers.csv"},
-        {"measurements", "../../data/measurements.csv"},
-        {"sensors", "../../data/sensors.csv"},
-        {"users", "../../data/users.csv"},
-        {"usersUntrusted", "../../data/usersUntrusted.csv"}};
+        {"attributes", "data/attributes.csv"},
+        {"cleaners", "data/cleaners.csv"},
+        {"providers", "data/providers.csv"},
+        {"measurements", "data/measurements.csv"},
+        {"sensors", "data/sensors.csv"},
+        {"users", "data/users.csv"},
+        {"usersUntrusted", "data/usersUntrusted.csv"}};
 
     Console airWatch(files);
 
-    time_t timer;
-    struct tm y2k = {0};
-    double seconds;
-
-    y2k.tm_hour = 0;   y2k.tm_min = 0; y2k.tm_sec = 0;
-    y2k.tm_year = 119; y2k.tm_mon = 11; y2k.tm_mday = 1;
-
-    timer=mktime(&y2k);
-    cout<<asctime(localtime(&timer))<<endl;
-
-
-
-    // cout<<airWatch.formatIR("192;128")<<endl;
-    // cout<<airWatch.formatLLR("192.5{128")<<endl;
-    // cout<<airWatch.formatLLR("ici;128");
     return 0;
 }
 
@@ -90,7 +80,7 @@ bool Console::formatIR(string choice){
             return false;
         }
 
-    }catch(exception &e){//invalid_argument &e){
+    }catch(exception &e){
         return false;
     }
 
@@ -119,6 +109,93 @@ bool Console::formatLLR(string choice){
 
     return true;
 }
+
+
+bool Console::formatDD(string choice){
+    vector<string> elementDuChoice ;
+    char delimiteur = ';';
+    split(choice, delimiteur , elementDuChoice);
+
+    try{
+        int cpt=0;
+        for(vector<string>::iterator it = elementDuChoice.begin();it!=elementDuChoice.end();it++){
+            string test=(*it);
+            if(formatD(test));
+            {
+                cpt++;
+            }            
+        }
+        if(cpt!=2){
+            return false;
+        }
+
+    }catch(exception &e){//invalid_argument &e){
+        return false;
+    }
+
+    return true;
+}
+
+
+bool Console::formatD(string choice){
+    vector<string> elementDuChoice ;
+    char delimiteur = '/';
+    split(choice, delimiteur , elementDuChoice);
+
+    try{
+        int cpt=0;
+        for(vector<string>::iterator it = elementDuChoice.begin();it!=elementDuChoice.end();it++){
+            string test=(*it);
+            int number = stoi(test);
+            cpt++;
+        }
+        if(cpt!=3){
+            return false;
+        }
+
+    }catch(exception &e){//invalid_argument &e){
+        return false;
+    }
+
+    return true;
+}
+
+
+
+
+bool Console::formatLLRDD(string choice){
+    vector<string> elementDuChoice ;
+    char delimiteur = ';';
+    split(choice, delimiteur , elementDuChoice);
+
+    try{
+        int cpt=0;
+        for(vector<string>::iterator it = elementDuChoice.begin();it!=elementDuChoice.end();it++){
+            string test=(*it);
+            if(cpt < 3 )
+            {
+                float temp = stof(test);
+                cpt++;
+                
+            }else if(cpt >= 3) {
+                if(formatD(test)){
+                    cpt++;
+                }
+            }
+        }
+        
+        if(cpt!=5){
+            return false;
+        }
+
+    }catch(exception &e){//invalid_argument &e){
+        return false;
+    }
+
+    return true;
+}
+
+
 
 void Console::split(const string &chaine, char delimiteur, vector<string> &elements)
 {
@@ -153,7 +230,7 @@ Console::Console(unordered_map<string,string> files):airWatch(files)
         }else if(strcmp(choice,"3")==0){
             menuProvider();
         }
-        
+        fscanf(stdin,"%99s",choice);        
     }
 }
 
@@ -349,7 +426,7 @@ void Console::selectTime(){
     cout<<"+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+"<<endl;
     char choice[100];
     fscanf(stdin,"%99s",choice);
-    if(true){                               //if(format(choice))
+    if(formatDD(choice)){                               //if(format(choice))
         //Pour une commande au bon format
         cout<<"+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+"<<endl;
         cout<<"+                                     AirWatcher                                  +"<<endl;
@@ -379,7 +456,7 @@ void Console::selectZoneAndTime(){
     cout<<"+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+"<<endl;
     char choice[100];
     fscanf(stdin,"%99s",choice);
-    if(true){                               //if(format(choice))
+    if(formatLLRDD(choice)){                               
         vector<string> elementDuChoice ;
         char delimiteur = ';';
         split(choice, delimiteur , elementDuChoice);
@@ -391,20 +468,35 @@ void Console::selectZoneAndTime(){
         int rayon=stoi(*it);
         it++;
         time_t start;
+        int yy, month, dd;
+        struct tm date;
+        const char *zStart = (*it).c_str();
+
+        sscanf(zStart, "%d/%d/%d", &dd, &month, &yy);
+        date.tm_year = yy - 1900;
+        date.tm_mon = month - 1;
+        date.tm_mday = dd;
+        date.tm_hour = 0;
+        date.tm_min = 0;
+        date.tm_sec = 0;
+        date.tm_isdst = -1;
+
+        start = mktime(&date);
+
         it++;
         time_t end;
+        zStart = (*it).c_str();
 
-        struct tm y2k = {0};
-        
-        y2k.tm_hour = 0;   y2k.tm_min = 0; y2k.tm_sec = 0;
-        y2k.tm_year = 119; y2k.tm_mon = 0; y2k.tm_mday = 1;
+        sscanf(zStart, "%d/%d/%d", &dd, &month, &yy);
+        date.tm_year = yy - 1900;
+        date.tm_mon = month - 1;
+        date.tm_mday = dd;
+        date.tm_hour = 0;
+        date.tm_min = 0;
+        date.tm_sec = 0;
+        date.tm_isdst = -1;
 
-        start=mktime(&y2k);
-        cout<<"start :"<<asctime(localtime(&start))<<endl;
-        y2k.tm_mon=1;
-        end=mktime(&y2k);
-        cout<<"end :"<<asctime(localtime(&end))<<endl;
-        
+        end = mktime(&date);       
 
         Measure airQuality=airWatch.getAirQuality(Coords(latitude, longitude),rayon,start, end);
         int indice=airQuality.atmosIndex();
