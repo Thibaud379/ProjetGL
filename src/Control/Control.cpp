@@ -55,8 +55,9 @@ vector<Sensor> Control::findCloseSensors(Coords coords, int radius)
     return closeSensors;
 }
 
-int Control::getAirQuality(Coords coords, int radius, time_t start, time_t end)
+Measure Control::getAirQuality(Coords coords, int radius, time_t start, time_t end)
 {
+    
     Measure m = {0, 0, 0, 0};
     int nbMeasures = 0;
     vector<Sensor> closeSensors = findCloseSensors(coords, radius);
@@ -68,8 +69,12 @@ int Control::getAirQuality(Coords coords, int radius, time_t start, time_t end)
 
         for (auto j : measures)
         {
-            if (difftime(j.first, start) < 0 && difftime(end, j.first) > 0)
+            
+            if (difftime(start, j.first) <= 0 && difftime(end, j.first) >= 0)
             {
+                // cout << difftime(j.first, start)  << endl;
+                // cout << j.first << endl;
+                // cout << "  " << j.second.O3 << "  " << j.second.NO2 << "  " << j.second.SO2 << "  " << j.second.PM10 << endl;
                 nbMeasures++;
                 m.add(j.second);
             }
@@ -77,20 +82,22 @@ int Control::getAirQuality(Coords coords, int radius, time_t start, time_t end)
     }
     m.div(nbMeasures);
 
-    return m.atmosIndex();
+    return m;
 }
 
 vector<int> Control::getImpact(Cleaner target, int radius)
 {
-    time_t debutCleaner = target.getTime().second;
+    time_t debutCleaner = target.getTime().first;
+
+    time_t finCleaner = target.getTime().second;
     vector<int> tabdelta;
-    for (int i = 1; i < 25; i++)
-    {
-        const int before = getAirQuality(target.getCoords(), (int)(i * radius / 25), 0, debutCleaner);
+    for (int i = 1; i < 7; i++)    
+      {
+        Measure before = getAirQuality(target.getCoords(), (int)(i * radius / 7), 0, debutCleaner);
 
-        const int after = getAirQuality(target.getCoords(), (int)(i * radius / 25), debutCleaner, numeric_limits<time_t>::max());
+        Measure after = getAirQuality(target.getCoords(), (int)(i * radius / 7), debutCleaner, finCleaner);
 
-        tabdelta.push_back(after - before);
+        tabdelta.push_back(after.atmosIndex() -  before.atmosIndex() );
     }
 
     return tabdelta;
