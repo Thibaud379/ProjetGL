@@ -13,7 +13,7 @@ const int Measure::atmosIndex()
     {
         if (this->O3 > iO3[i] || this->SO2 > iSO2[i] || this->NO2 > iNO2[i] || this->PM10 > iPM10[i])
         {
-            athmo = i + 1;
+            athmo = i + 2;
             break;
         }
     }
