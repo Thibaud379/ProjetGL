@@ -1,4 +1,3 @@
-
 #include "Control.h"
 #include <algorithm>
 
@@ -41,64 +40,67 @@ list<pair<float, Sensor>> *Control::findSimilarSensor(Sensor target, float delta
     return result;
 }
 
+// Cherche les capteurs situés dans une zone
 vector<Sensor> Control::findCloseSensors(Coords coords, int radius)
 {
+    // Vecteur des Capteurs de la zone
     vector<Sensor> closeSensors;
-
+    // Parcours de tous les capteurs du fichier
     for (auto it : data.sensors)
     {
-        if (coords.dist(it.second.getCoords()) < radius)
+        //Si la distance entre les coordonnées du capteur et les coordonnées spécifiées est inférieure au rayon
+        if (coords.dist(it.second.getCoords()) <= radius) 
         {
-            closeSensors.push_back(it.second);
+            closeSensors.push_back(it.second); // On ajoute le capteur à la liste
         }
     }
     return closeSensors;
 }
 
+// Calcul de la qualité de l'air avec une moyenne des mesures sur une zone et une période donnée 
 Measure Control::getAirQuality(Coords coords, int radius, time_t start, time_t end)
 {
-    
     Measure m = {0, 0, 0, 0};
     int nbMeasures = 0;
+    // Récupération des capteurs de la zone spécifiée
     vector<Sensor> closeSensors = findCloseSensors(coords, radius);
-
     for (auto i : closeSensors)
-    {
-
+    {        
+        // Récupération des mesures d'un capteur de la zone
         map<time_t, Measure> measures = i.getMeasure();
-
         for (auto j : measures)
         {
-            
+            // Si la date de la mesure est comprise dans la période spécifiée
             if (difftime(start, j.first) <= 0 && difftime(end, j.first) >= 0)
             {
-                // cout << difftime(j.first, start)  << endl;
-                // cout << j.first << endl;
-                // cout << "  " << j.second.O3 << "  " << j.second.NO2 << "  " << j.second.SO2 << "  " << j.second.PM10 << endl;
                 nbMeasures++;
-                m.add(j.second);
+                // On ajoute les mesures
+                m.add(j.second); 
             }
         }
     }
+    // Moyenne des mesures récupérées sur la zone et la période
     m.div(nbMeasures);
 
     return m;
 }
 
-vector<int> Control::getImpact(Cleaner target, int radius)
+// Calcul de l'impact d'un Cleaner en fonction du rayon
+vector<pair<int,int>> Control::getImpact(Cleaner target, int radius)
 {
+    // Récupération des dates de début et de fin de l'action du Cleaner
     time_t debutCleaner = target.getTime().first;
-
     time_t finCleaner = target.getTime().second;
-    vector<int> tabdelta;
-    for (int i = 1; i < 7; i++)    
-      {
-        Measure before = getAirQuality(target.getCoords(), (int)(i * radius / 7), 0, debutCleaner);
-
-        Measure after = getAirQuality(target.getCoords(), (int)(i * radius / 7), debutCleaner, finCleaner);
-
-        tabdelta.push_back(after.atmosIndex() -  before.atmosIndex() );
+    // Vecteur contenant le rayon et l'évolution de l'indice ATMO
+    vector<pair<int,int>> tabdelta;
+    // Découpage du rayon en 10 portions
+    for (int i = 1; i < 11; i++){
+        // Calcul de la qualité de l'air avant que le Cleaner n'est agit
+        Measure before = getAirQuality(target.getCoords(), (int)(i * radius / 10), 0, debutCleaner);
+        // Calcul de la qualité de l'air pendant la période où le Cleaner a agit
+        Measure after = getAirQuality(target.getCoords(), (int)(i * radius / 10), debutCleaner, finCleaner);
+        // Ajout du rayon et de l'évolution de l'indice ATMO au vecteur
+        tabdelta.push_back(make_pair((int)(i * radius / 10),after.atmosIndex() -  before.atmosIndex())  );
     }
-
     return tabdelta;
 }
