@@ -1,1 +1,1 @@
-../../Test.exe ../Tests/Test2JeuDonnesImpactAirCleaner.csv 2
+../../Test.exe data/measurements.csv 2

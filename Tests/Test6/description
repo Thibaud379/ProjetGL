@@ -3,4 +3,4 @@ Vérifier que le service de calcul de statistiques par zone fonctionne correctem
 On entre un jeu de données pour une zone dont on connaît la qualité de l’air 
 
 -> JeuDonnesServiceZone
-Résultat attendu : 7.78
+Résultat attendu : 8

@@ -36,21 +36,42 @@ int main(int argc, char **argv)
     }else if (testNumber == 2)
     {
         
-        vector<int> v = c.getImpact(c.data.cleaners.at("Cleaner0"), 50);
-        //cout<<"size: "<<v.size()<<endl;    
-        cout << "before : "<< v[0] << endl << "after : "<< v[1] << endl<< "difference: "<< v[2] << endl;
+        
+     
+
+       vector<pair<int,int>> impactAirCleaner=c.getImpact(c.data.cleaners.at("Cleaner1"), 50);
+       for(vector<pair<int,int>>::iterator it = impactAirCleaner.begin();it!=impactAirCleaner.end();it++){
+                int dist=(*it).first;
+                if(dist/10==0){
+                    cout<<"Sur un rayon de "<<dist<<"km, l'indice atmo a diminué de : "<<(*it).second<<endl;
+                }else if(dist/100==0){
+                    cout<<"Sur un rayon de "<<dist<<"km, l'indice atmo a diminué de : "<<(*it).second<<endl;
+                }else if(dist/1000==0){
+                    cout<<"Sur un rayon de "<<dist<<"km, l'indice atmo a diminué de : "<<(*it).second<<endl;
+                }else if(dist/10000==0){
+                    cout<<"Sur un rayon de "<<dist<<"km, l'indice atmo a diminué de : "<<(*it).second<<endl;
+                }else {
+                    cout<<"Sur un rayon de "<<dist<<"km, l'indice atmo a diminué de : "<<(*it).second<<endl;
+                }    
+            }
+       
 
     }else if (testNumber == 3)
     {
-        int airQuality = c.getAirQuality(c.data.sensors.at("Sensor0").getCoords(), 2, parseTime("2019-01-01 12:00:00"), parseTime("2019-01-03 12:00:00"));
+        Measure airQuality=c.getAirQuality(c.data.sensors.at("Sensor0").getCoords(), 0, parseTime("2019-01-01 12:00:00"), parseTime("2019-01-03 12:00:00"));
+        int indice=airQuality.atmosIndex();
         
-        cout << airQuality << endl;
+        
+        cout << indice << endl;
 
     }else if (testNumber == 4)
     { 
-        int airQuality = c.getAirQuality(c.data.sensors.at("Sensor18").getCoords(), 70, parseTime("2019-01-01 12:00:00"), parseTime("2019-01-01 12:00:00"));
+        Measure airQuality=c.getAirQuality(c.data.sensors.at("Sensor18").getCoords(), 70, parseTime("2019-01-01 12:00:00"), parseTime("2019-01-01 12:00:00"));
+        int indice=airQuality.atmosIndex();
         
-        cout << airQuality << endl;
+        
+        cout << indice << endl;
+        
 
     }
     
