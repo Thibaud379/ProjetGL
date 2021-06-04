@@ -150,8 +150,15 @@ void Console::impactAirCleaner(){
         string rayon=*it;
         
         try{
+            //Calcul du temps
+            float temps;
+            clock_t start, end; 
+            start = clock();
             // Récupération du cleaner
             Cleaner monCleaner=airWatch.data.cleaners.at(id);
+            end = clock();
+            temps = (float)(end - start)
+            cout << "Temps de calcul : " << temps <<"s" <<endl;
             // Calcul de son impact
             vector<pair<int,int>> impactAirCleaner=airWatch.getImpact(monCleaner, stoi(rayon));
             //Affichage du résultat
