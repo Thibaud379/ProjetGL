@@ -4,10 +4,10 @@ const int Measure::atmosIndex()
 {
     int athmo = 1;
     const int max = 9;
-    const int iO3[max] = {29, 54, 79, 104, 129, 149, 179, 209, 239};
-    const int iSO2[max] = {39, 79, 119, 159, 199, 249, 299, 399, 499};
-    const int iNO2[max] = {29, 54, 84, 109, 134, 164, 199, 274, 399};
-    const int iPM10[max] = {6, 13, 20, 27, 34, 41, 49, 64, 79};
+    const float iO3[max] = {29, 54, 79, 104, 129, 149, 179, 209, 239};
+    const float iSO2[max] = {39, 79, 119, 159, 199, 249, 299, 399, 499};
+    const float iNO2[max] = {29, 54, 84, 109, 134, 164, 199, 274, 399};
+    const float iPM10[max] = {6, 13, 20, 27, 34, 41, 49, 64, 79};
 
     for (int i = max - 1; i >= 0; i--)
     {

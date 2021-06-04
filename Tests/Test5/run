@@ -1,1 +1,1 @@
-../../Test.exe ../Tests/Test5/JeuDonnesServicePeriodeModif.csv 3
+../../Test.exe ./JeuDonnesServicePeriodeModif.csv 3
