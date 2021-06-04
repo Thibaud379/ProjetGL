@@ -1,4 +1,5 @@
 #include "Console.h"
+#include <time.h>
 
 /*int main(int argc, char **argv)
 {
@@ -157,8 +158,7 @@ void Console::impactAirCleaner(){
             // Récupération du cleaner
             Cleaner monCleaner=airWatch.data.cleaners.at(id);
             end = clock();
-            temps = (float)(end - start)
-            cout << "Temps de calcul : " << temps <<"s" <<endl;
+            temps = (float)(end - start);
             // Calcul de son impact
             vector<pair<int,int>> impactAirCleaner=airWatch.getImpact(monCleaner, stoi(rayon));
             //Affichage du résultat
@@ -184,6 +184,7 @@ void Console::impactAirCleaner(){
                 }    
             }
             cout<<"+                                                                                 +"<<endl;
+            cout<<"+                      Temps de calcul : " << temps/CLOCKS_PER_SEC <<"s                                   +"<<endl;
             cout<<"+                                                                                 +"<<endl;
             cout<<"+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+"<<endl;
         }catch(exception &e){
@@ -369,9 +370,18 @@ void Console::selectZoneAndTime(){
         it++;
         time_t end=parseDate(*it);
 
+        //Calcul du temps
+        float duree;
+        clock_t debut, fin; 
+        debut = clock();
         //Calcul de la qualité de l'air
         Measure airQuality=airWatch.getAirQuality(Coords(latitude, longitude),rayon,start, end);
         int indice=airQuality.atmosIndex();
+
+        fin = clock();
+        duree = (float)(fin - debut);
+        cout << "Temps de calcul : " << duree/CLOCKS_PER_SEC <<"s" <<endl;
+
         
         cout<<setprecision(4);
         //Affichage du résultat
@@ -386,6 +396,7 @@ void Console::selectZoneAndTime(){
         cout<<"+           |   "<<airQuality.O3<<"   |    "<<airQuality.SO2<<"    |   "<<airQuality.NO2<<"     |   "<<airQuality.PM10<<"    |                +"<<endl;
         cout<<"+           ------------------------------------------------------                +"<<endl;
         cout<<"+                                                                                 +"<<endl;
+        cout<<"+                       Temps de calcul : " << duree/CLOCKS_PER_SEC <<"s                                +"<<endl;
         cout<<"+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+"<<endl;
         //Retour au menu d'accueil
         accueil();
