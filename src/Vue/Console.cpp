@@ -134,7 +134,7 @@ void Console::impactAirCleaner(){
     cout<<"+                                     AirWatcher                                  +"<<endl;
     cout<<"+                                                                                 +"<<endl;
     cout<<"+  Entrez l'id du AirCleaner voulu et le rayon autour de ce dernier au format     +"<<endl;
-    cout<<"+                                     \"ID;rayon(km)\"                            +"<<endl;
+    cout<<"+                             \"n°duCleaner;rayon(km)\"                             +"<<endl;
     cout<<"+                                                                                 +"<<endl;
     cout<<"+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+"<<endl;
     char choice[100];
