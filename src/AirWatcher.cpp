@@ -3,13 +3,6 @@
 #include <unordered_map>
 #include <ctime>
 
-time_t parseTime(string time)
-{
-    struct tm t = tm();
-    strptime(time.c_str(), format.c_str(), &t);
-    return mktime(&t);
-}
-
 int main(int argc, char **argv)
 {
     unordered_map<string, string> files = {
@@ -29,7 +22,6 @@ int main(int argc, char **argv)
     // }
 
     Console airWatcher(files);
-    
 
     return 0;
 }

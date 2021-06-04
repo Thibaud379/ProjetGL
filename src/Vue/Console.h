@@ -20,7 +20,7 @@ using namespace std;
 class Console
 {
 
-private:    
+private:
     Control airWatch;
 
     void split(const string &chaine, char delimiteur, vector<string> &elements);
@@ -42,7 +42,7 @@ private:
     // Vérification du format d'une entrée JJ/MM/AAAA
     // Cette fonction renvoie :
     //   - vrai, si le format est conforme
-    //   - faux, si le format n'est pas conforme    
+    //   - faux, si le format n'est pas conforme
 
     bool formatDD(string choice);
     // Vérification du format d'une entrée JJ/MM/AAAA;JJ/MM/AAAA pour des statistiques
@@ -63,7 +63,7 @@ private:
 public:
     Console(unordered_map<string, string> files);
     ~Console();
-    
+
     void accueil();
     //Menu principal
 
@@ -82,6 +82,8 @@ public:
     void selectZone();
     // Qualité de l'air dans une zone spécifiée
 
+    void similarSensor();
+
     void selectTime();
     // Qualité de l'air dans une période spécifiée
 
@@ -90,7 +92,7 @@ public:
 
     void badFormat(string menu);
     // Retour lors d'un mauvais format entré
-    
+
     void points();
     // Affichage des points d'un utilisateur
 
