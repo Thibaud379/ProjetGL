@@ -2,7 +2,7 @@
 
 To Compile simply use the makefile provided
 
-Ex:
+Example:
 
 > make debug  
 > make opti  
